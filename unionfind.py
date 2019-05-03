@@ -5,6 +5,7 @@ class Node:
         self.u = u
         self.v = v
         self.rank = 1
+        self.custo = 0
 
     def __str__(self):
         return str(self.id)
@@ -23,42 +24,25 @@ def Init(n):
 class UF:
     def __init__(self, n):
         self.lista = Init(n)
+
+# caso o representante de classe, id, nao seja ele mesmo seu propio pai, que no caso
+# to emulando com o cost,
 # maximo vai ser a altura da arvore log(n)
     def Find(self, p):
         p = self.lista[p]
         if(p.id == int(p.cost)):
             return p
         else:
-            print p.id
             return self.Find(p.id)
 
-# 2*log(n)
     def Union(self, p, q):
-        #p = self.lista[p]
-        #q = self.lista[q]
+# hora de encontrar nosso representante de classe
         p = self.Find(p)
         q = self.Find(q)
         if (p.rank > q.rank):
             p, q = q, p
         p.id = int(q)
         q.rank += p.rank
-        print q.rank
-
-
-
-if False:
-    g = Init(7)
-    for x in g:
-        print "ids:"+ str(int(Find(x))) + " rank:" + str(int(x.rank))
-    print "compartimento do 1o e 3o sao o mesmo?" + str(Find(g[0]).id == Find(g[2]).id)
-    print "joining primeiro e terceiro"
-    Union(g[0], g[2])
-    print "compartimento do 1o e 3o sao o mesmo?" + str(Find(g[0]).id == Find(g[2]).id)
-    print "compartimento do 1o e 6o sao o mesmo?" + str(Find(g[0]).id == Find(g[5]).id)
-    Union(g[0], g[5])
-    print "compartimento do 1o e 6o sao o mesmo?" + str(Find(g[0]).id == Find(g[5]).id)
-
-#sets =  [str(Find(x)) for x in g]
 
 # loads a stored file where each line has one edge(u, v, cost)
 def load_graph_edges(filename):
@@ -72,33 +56,20 @@ def load_graph_edges(filename):
     return a
 
 def Kruskal(edges):
+    # init my Union Find struct
     g = UF(7)
-    mst = []
+    # now sort edges by cost
     edges.sort(key=lambda x: x.cost)
-    for i in range(len(edges)):
-        print g.lista
-        print g.Find(edges[i].u), g.Find(edges[i].v)
-        if g.Find(edges[i].u).id == g.Find(edges[i].v).id:
-            continue
-        else:
-            print g.Find(edges[i].u).id, g.Find(edges[i].v).id
-            g.Union(edges[i].u, edges[i].v)
-            print g.Find(edges[i].u).id, g.Find(edges[i].v).id
-            print edges[i].cost
-            mst.append(edges[i].cost)
-    print mst
+    with open('mst.txt', 'w') as _file:
+        for i in range(len(edges)):
+            u = edges[i].u
+            v = edges[i].v
+            if g.Find(u).id == g.Find(v).id:
+                continue
+            else:
+                g.Union(u, v)
+                _file.write(str(u) + ' ' + str(v) +
+                ' ' + str(edges[i].cost) + '\n')
 
 
-
-a = load_graph_edges('graph.txt')
-print a
-"""print a
-print "compartimento do 1o e 3o sao o mesmo?" + str(Find(a[a[0].u]).id == Find(a[a[2].v]).id)
-print "joining primeiro e terceiro"
-Union(a[0], a[2])
-print "compartimento do 1o e 3o sao o mesmo?" +  str(Find(a[a[0].u]).id == Find(a[a[2].v]).id)
-print a
-"""
-Kruskal(a)
-
-
+a = load_graph_edges('graph2.txt')
