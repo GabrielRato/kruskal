@@ -1,3 +1,5 @@
+import sys
+
 class Node:
     def __init__(self, id, cost=0, u=-1, v=-1):
         self.id = id
@@ -5,7 +7,6 @@ class Node:
         self.u = u
         self.v = v
         self.rank = 1
-        self.custo = 0
 
     def __str__(self):
         return str(self.id)
@@ -45,6 +46,7 @@ class UF:
         q.rank += p.rank
 
 # loads a stored file where each line has one edge(u, v, cost)
+# and stores it into Nodes
 def load_graph_edges(filename):
     a = []
     idx = 0
@@ -56,20 +58,29 @@ def load_graph_edges(filename):
     return a
 
 def Kruskal(edges):
+    pesos = 0
     # init my Union Find struct
     g = UF(7)
     # now sort edges by cost
     edges.sort(key=lambda x: x.cost)
     with open('mst.txt', 'w') as _file:
+        # iterate over all edges, we must choose wich one to keep into final
+        # mst
         for i in range(len(edges)):
             u = edges[i].u
             v = edges[i].v
+            # somewhere we have to ugly the code
             if g.Find(u).id == g.Find(v).id:
                 continue
             else:
                 g.Union(u, v)
                 _file.write(str(u) + ' ' + str(v) +
                 ' ' + str(edges[i].cost) + '\n')
+                pesos += edges[i].cost
+    print 'final size of UF: '+ str(sys.getsizeof(g))
+    print 'final size of Graph: '+ str(sys.getsizeof(edges))
+    print pesos
 
 
 a = load_graph_edges('graph2.txt')
+Kruskal(a)
